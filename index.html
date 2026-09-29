@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet de formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
+<style>
+/* Layout : une colonne centrée (max 960px) — aperçu (chiffres + à venir) puis liste à onglets Cours / Conférences */
+:root {
+  --bg: #f4f5f6;
+  --surface: #ffffff;
+  --ink: rgba(0, 0, 0, 0.85);
+  --ink-2: rgba(0, 0, 0, 0.45);
+  --ink-3: rgba(0, 0, 0, 0.30);
+  --line: rgba(0, 0, 0, 0.07);
+  --soft: rgba(0, 0, 0, 0.05);
+  --soft-2: rgba(0, 0, 0, 0.09);
+  --btn-bg: #000000;
+  --btn-fg: #ffffff;
+  --btn-glow: rgba(255, 255, 255, 0.5);
+  --blob-a: #a0c3d7;
+  --blob-b: #d2be8c;
+  --blob-c: #7fc4de;
+  --coursera: #0056d2;
+  --edx: #b51f2e;
+  --other: #7a7f87;
+  --ok: #2f8a57;
+  --warn: #a66a12;
+  --info: #2f6f9a;
+  --danger: #b3261e;
+  --desk: #e7e8ea;
+  --font: 'Inter Display', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1012; --surface: #18191c;
+    --ink: rgba(255,255,255,0.88); --ink-2: rgba(255,255,255,0.50); --ink-3: rgba(255,255,255,0.32);
+    --line: rgba(255,255,255,0.08); --soft: rgba(255,255,255,0.06); --soft-2: rgba(255,255,255,0.11);
+    --btn-bg: #ffffff; --btn-fg: #000000; --btn-glow: rgba(255,255,255,0.9);
+    --blob-a: #2b4a5c; --blob-b: #4d4430; --blob-c: #1f4c5e;
+    --coursera: #5b9bff; --edx: #ff6b78; --other: #9aa0a8;
+    --ok: #5cc98b; --warn: #e0a64a; --info: #6fb3e0; --danger: #ff7b72;
+    --desk: #08090a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1012; --surface: #18191c;
+  --ink: rgba(255,255,255,0.88); --ink-2: rgba(255,255,255,0.50); --ink-3: rgba(255,255,255,0.32);
+  --line: rgba(255,255,255,0.08); --soft: rgba(255,255,255,0.06); --soft-2: rgba(255,255,255,0.11);
+  --btn-bg: #ffffff; --btn-fg: #000000; --btn-glow: rgba(255,255,255,0.9);
+  --blob-a: #2b4a5c; --blob-b: #4d4430; --blob-c: #1f4c5e;
+  --coursera: #5b9bff; --edx: #ff6b78; --other: #9aa0a8;
+  --ok: #5cc98b; --warn: #e0a64a; --info: #6fb3e0; --danger: #ff7b72;
+    --desk: #08090a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  -webkit-font-smoothing: antialiased;
+  font-optical-sizing: auto;
+  padding: 0 16px;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+.halo { position: absolute; inset: 0 0 auto 0; height: 520px; overflow: hidden; pointer-events: none; z-index: 0; }
+.halo span { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.45; }
+.halo span:nth-child(1) { width: 520px; height: 520px; background: var(--blob-a); left: -120px; top: -260px; }
+.halo span:nth-child(2) { width: 460px; height: 460px; background: var(--blob-b); right: -140px; top: -200px; }
+.halo span:nth-child(3) { width: 380px; height: 380px; background: var(--blob-c); left: 40%; top: -280px; opacity: 0.3; }
+
+.wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding-block: 28px 80px; }
+
+/* ---- Header ---- */
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.4px; }
+.brand i { width: 22px; height: 22px; border-radius: 7px; background: var(--btn-bg); display: inline-block; box-shadow: inset 0 3px 3px var(--btn-glow); }
+.top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+h1 {
+  font-size: clamp(30px, 6vw, 46px);
+  font-weight: 600;
+  letter-spacing: -1.6px;
+  line-height: 1.05;
+  margin: 56px 0 10px;
+  text-wrap: balance;
+}
+.lede { color: var(--ink-2); font-size: 17px; letter-spacing: -0.4px; max-width: 58ch; margin: 0; }
+.today { color: var(--ink-3); font-size: 13px; letter-spacing: -0.2px; margin-top: 18px; }
+.today::first-letter { text-transform: uppercase; }
+
+/* ---- Buttons (tekiyo) ---- */
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 500; letter-spacing: -0.28px;
+  padding: 8px 18px; border-radius: 999px;
+  background: var(--btn-bg); color: var(--btn-fg);
+  box-shadow: inset 0 4px 4px var(--btn-glow);
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  text-decoration: none;
+}
+.btn:hover { opacity: 0.86; }
+.btn:active { transform: scale(0.96); }
+.btn.ghost { background: var(--soft); color: var(--ink); box-shadow: none; }
+.btn.ghost:hover { background: var(--soft-2); opacity: 1; }
+.btn.sm { font-size: 13px; padding: 5px 12px; }
+.btn.danger { background: transparent; color: var(--danger); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.danger.armed { background: var(--danger); color: #fff; box-shadow: none; }
+.btn:focus-visible, .chip:focus-visible, .tab:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+  outline: 2px solid var(--ink); outline-offset: 2px;
+}
+
+/* ---- Sample banner ---- */
+.banner {
+  margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px 10px 10px 16px; border-radius: 14px; background: var(--soft); color: var(--ink-2); font-size: 14px;
+}
+
+/* ---- Stats ---- */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; }
+.stat .k { color: var(--ink-2); font-size: 13px; letter-spacing: -0.26px; }
+.stat .v { font-size: 30px; font-weight: 600; letter-spacing: -1.2px; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat .v small { font-size: 15px; color: var(--ink-3); font-weight: 500; letter-spacing: -0.3px; margin-left: 2px; }
+.stat .s { color: var(--ink-3); font-size: 12.5px; margin-top: 2px; }
+
+/* ---- Section heads ---- */
+.section { margin-top: 44px; }
+.sec-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.6px; margin: 0; }
+.sec-head p { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; }
+
+/* ---- Upcoming ---- */
+.upcoming { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.up-row { display: grid; grid-template-columns: 76px 1fr auto; gap: 14px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line); }
+.up-row:first-child { border-top: 0; }
+.up-date { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.up-date b { display: block; color: var(--ink); font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.up-main { min-width: 0; }
+.up-main .t { font-weight: 500; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-main .m { font-size: 13px; color: var(--ink-2); }
+.countdown { font-size: 13px; font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.countdown.soon { color: var(--warn); }
+.empty { padding: 28px 18px; color: var(--ink-2); font-size: 14px; text-align: center; }
+
+/* ---- Tabs & filters ---- */
+.tabs { display: inline-flex; padding: 4px; gap: 2px; border-radius: 999px; background: var(--soft); }
+.tab {
+  appearance: none; border: 0; background: transparent; cursor: pointer; font: inherit;
+  font-size: 14px; font-weight: 500; letter-spacing: -0.28px; color: var(--ink-2);
+  padding: 7px 16px; border-radius: 999px; transition: color 0.2s, background 0.2s;
+}
+.tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.tab .n { color: var(--ink-3); margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0 14px; }
+.chip {
+  appearance: none; border: 0; cursor: pointer; font: inherit; font-size: 13px; font-weight: 500; letter-spacing: -0.26px;
+  padding: 5px 12px; border-radius: 999px; background: transparent; color: var(--ink-2);
+  box-shadow: inset 0 0 0 1px var(--line); display: inline-flex; align-items: center; gap: 6px;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); box-shadow: none; }
+.search {
+  margin-left: auto; font: inherit; font-size: 14px; letter-spacing: -0.28px; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; width: 220px; max-width: 100%;
+}
+.search::placeholder { color: var(--ink-3); }
+
+/* ---- Cards ---- */
+.list { display: grid; gap: 10px; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px;
+  display: grid; gap: 12px;
+}
+.card-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.card-main { min-width: 0; }
+.eyebrow { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); letter-spacing: -0.26px; flex-wrap: wrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.coursera { background: var(--coursera); }
+.dot.edx { background: var(--edx); }
+.dot.autre { background: var(--other); }
+.plat { font-weight: 600; color: var(--ink); }
+.title { font-size: 17px; font-weight: 600; letter-spacing: -0.5px; margin-top: 4px; line-height: 1.3; overflow-wrap: anywhere; }
+.title a { color: inherit; text-decoration: none; }
+.title a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ink-3); }
+.meta { display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.notes { font-size: 13.5px; color: var(--ink-2); margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.pill { font-size: 12.5px; font-weight: 500; letter-spacing: -0.2px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; background: var(--soft); color: var(--ink-2); }
+.pill.doing, .pill.registered { color: var(--info); background: color-mix(in srgb, var(--info) 12%, transparent); }
+.pill.done, .pill.attended { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.pill.paused, .pill.maybe { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); }
+.pill.dropped, .pill.cancelled { color: var(--ink-3); text-decoration: line-through; }
+
+.progress { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.progress input[type=range] { width: 100%; accent-color: var(--ink); margin: 0; }
+.progress output { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
+.card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.card-foot .acts { display: flex; gap: 6px; margin-left: auto; }
+
+.ev { grid-template-columns: 64px 1fr; align-items: start; }
+.cal {
+  border-radius: 14px; background: var(--soft); text-align: center; padding: 8px 0 9px; font-variant-numeric: tabular-nums;
+}
+.cal .mo { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-2); }
+.cal .d { font-size: 24px; font-weight: 600; letter-spacing: -1px; line-height: 1.1; }
+.cal .y { font-size: 11px; color: var(--ink-3); }
+.ev-body { display: grid; gap: 10px; min-width: 0; }
+.past .cal, .past .title { opacity: 0.6; }
+
+/* ---- Dialog ---- */
+dialog {
+  border: 0; padding: 0; border-radius: 22px; background: var(--surface); color: var(--ink);
+  width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 48px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 0 0 1px var(--line);
+}
+dialog::backdrop { background: rgba(0,0,0,0.28); backdrop-filter: blur(3px); }
+dialog form { padding: 22px; display: grid; gap: 14px; }
+dialog h3 { margin: 0 0 2px; font-size: 20px; font-weight: 600; letter-spacing: -0.6px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field > span { font-size: 12.5px; color: var(--ink-2); letter-spacing: -0.2px; }
+.field input, .field select, .field textarea {
+  font: inherit; font-size: 14.5px; color: var(--ink); letter-spacing: -0.28px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; width: 100%;
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field input[type=range] { padding: 0; background: none; border: 0; accent-color: var(--ink); }
+.dlg-foot { display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.dlg-foot .spacer { flex: 1; }
+.err { color: var(--danger); font-size: 13px; margin: 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px);
+  background: var(--btn-bg); color: var(--btn-fg); box-shadow: inset 0 4px 4px var(--btn-glow);
+  padding: 9px 18px; border-radius: 999px; font-size: 14px; font-weight: 500; letter-spacing: -0.28px;
+  opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 30;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+footer { margin-top: 56px; color: var(--ink-3); font-size: 13px; display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: center; }
+footer button { appearance: none; border: 0; background: none; font: inherit; color: var(--ink-2); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ink-3); }
+
+/* ---- Notes : liste ---- */
+.nb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.nb { appearance: none; border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; display: grid; gap: 10px; min-width: 0; }
+.nb-cover {
+  aspect-ratio: 1000 / 1414; max-width: 100%; border-radius: 10px; overflow: hidden; background: #fff; position: relative;
+  box-shadow: 0 0 0 1px var(--line), 0 6px 18px rgba(0,0,0,0.06); transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.25s;
+}
+.nb-cover canvas { width: 100%; height: 100%; display: block; }
+.nb:hover .nb-cover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--line), 0 12px 28px rgba(0,0,0,0.10); }
+.nb:focus-visible { outline: none; }
+.nb:focus-visible .nb-cover { outline: 2px solid var(--ink); outline-offset: 3px; }
+.nb-pages { position: absolute; right: 8px; bottom: 8px; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; background: rgba(0,0,0,0.72); color: #fff; font-variant-numeric: tabular-nums; }
+.nb-t { font-weight: 600; letter-spacing: -0.35px; font-size: 14.5px; line-height: 1.3; overflow-wrap: anywhere; }
+.nb-m { font-size: 12.5px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; min-width: 0; }
+.nb-m span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-d { font-size: 12px; color: var(--ink-3); }
+.nb-new { display: grid; place-items: center; aspect-ratio: 1000 / 1414; max-width: 100%; border-radius: 10px; border: 1.5px dashed var(--soft-2); color: var(--ink-2); font-size: 14px; font-weight: 500; letter-spacing: -0.28px; transition: border-color 0.2s, color 0.2s; }
+.nb:hover .nb-new { border-color: var(--ink-3); color: var(--ink); }
+.nb-new b { display: block; font-size: 28px; font-weight: 400; line-height: 1; text-align: center; margin-bottom: 6px; }
+.filters select.search { width: auto; margin-left: 0; appearance: auto; }
+
+/* ---- Notes : éditeur ---- */
+.editor { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: var(--desk); }
+.ed-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.ed-head { flex: 1 1 220px; min-width: 0; display: grid; }
+.ed-head input {
+  font: inherit; font-size: 16px; font-weight: 600; letter-spacing: -0.4px; color: var(--ink);
+  background: transparent; border: 0; padding: 2px 6px; margin-left: -6px; border-radius: 8px; width: 100%;
+}
+.ed-head input:hover { background: var(--soft); }
+.ed-ref { font-size: 12.5px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ed-ref span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ed-status { font-size: 12.5px; color: var(--ink-3); min-width: 80px; text-align: right; }
+.ed-group { display: flex; gap: 4px; align-items: center; }
+.zoomv { font-size: 12.5px; font-variant-numeric: tabular-nums; color: var(--ink-2); min-width: 3.4em; text-align: center; }
+
+.ed-toolbar { display: flex; justify-content: center; padding: 10px 16px 0; }
+.toolpill {
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center;
+  background: var(--surface); border-radius: 999px; padding: 5px 8px; box-shadow: 0 0 0 1px var(--line), 0 6px 20px rgba(0,0,0,0.07);
+}
+.tsep { display: inline-block; width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+.tbtn {
+  appearance: none; border: 0; background: transparent; color: var(--ink-2); cursor: pointer;
+  width: 36px; height: 36px; border-radius: 999px; display: inline-grid; place-items: center; transition: background 0.15s, color 0.15s;
+}
+.tbtn:hover { background: var(--soft); color: var(--ink); }
+.tbtn[aria-pressed="true"] { background: var(--btn-bg); color: var(--btn-fg); box-shadow: inset 0 4px 4px var(--btn-glow); }
+.tbtn:disabled { opacity: 0.35; cursor: default; background: transparent; }
+.tbtn svg { width: 19px; height: 19px; }
+.swatch {
+  appearance: none; border: 0; cursor: pointer; width: 26px; height: 26px; border-radius: 50%; padding: 0;
+  display: inline-grid; place-items: center; background: transparent;
+}
+.swatch i { width: 18px; height: 18px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12); }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.sizeb { appearance: none; border: 0; background: transparent; cursor: pointer; width: 28px; height: 28px; border-radius: 999px; display: inline-grid; place-items: center; }
+.sizeb i { display: block; border-radius: 50%; background: var(--ink-2); }
+.sizeb[aria-pressed="true"] { background: var(--soft-2); }
+.sizeb[aria-pressed="true"] i { background: var(--ink); }
+.stylus { font: inherit; font-size: 12.5px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; padding: 0 8px; cursor: pointer; white-space: nowrap; }
+.stylus input { accent-color: var(--ink); margin: 0; }
+
+.ed-scroll { flex: 1; overflow: auto; padding: 22px 16px 60px; overscroll-behavior: contain; }
+.ed-pages { display: flex; flex-direction: column; align-items: center; gap: 26px; min-width: min-content; }
+.pwrap { width: var(--pw, 800px); display: grid; gap: 8px; }
+.phead { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+.phead .r { display: flex; gap: 6px; align-items: center; }
+.phead select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; }
+.npage { position: relative; width: 100%; aspect-ratio: 1000 / 1414; background: #fff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 10px 30px rgba(0,0,0,0.08); }
+.npage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.npage canvas.live { touch-action: none; cursor: crosshair; }
+.stylus-only .npage canvas.live { touch-action: pan-x pan-y; }
+.tool-text .npage canvas.live { cursor: text; }
+.tool-eraser .npage canvas.live { cursor: none; }
+.tlayer { position: absolute; inset: 0; pointer-events: none; }
+.tbox {
+  position: absolute; pointer-events: none; outline: none; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: var(--font); line-height: 1.38; letter-spacing: -0.01em; border-radius: 4px; min-height: 1.4em;
+  font-size: calc(var(--fs) * var(--s, 1) * 1px);
+}
+.tool-text .tbox { pointer-events: auto; cursor: text; box-shadow: 0 0 0 1px rgba(36, 86, 201, 0.25); }
+.tool-text .tbox:focus { box-shadow: 0 0 0 1.5px rgba(36, 86, 201, 0.7); background: rgba(36, 86, 201, 0.04); }
+.tbox:empty::before { content: 'Écris ici…'; color: rgba(0,0,0,0.3); }
+.addpage { width: var(--pw, 800px); display: grid; place-items: center; padding: 22px; border-radius: 6px; border: 1.5px dashed var(--soft-2); color: var(--ink-2); background: transparent; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+.addpage:hover { color: var(--ink); border-color: var(--ink-3); }
+.paper-pick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.paper-pick label { position: relative; display: grid; gap: 6px; font-size: 12.5px; color: var(--ink-2); text-align: center; cursor: pointer; }
+.paper-pick canvas { width: 100%; aspect-ratio: 1000 / 1414; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); background: #fff; }
+.paper-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.paper-pick input:checked + canvas { box-shadow: 0 0 0 2px var(--ink); }
+.paper-pick input:focus-visible + canvas { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .search { margin-left: 0; width: 100%; }
+  h1 { margin-top: 40px; }
+}
+@media (max-width: 460px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .up-row { grid-template-columns: 58px 1fr; }
+  .up-row .countdown { grid-column: 2; margin-top: -8px; }
+  .ev { grid-template-columns: 1fr; }
+  .cal { display: flex; gap: 8px; align-items: baseline; justify-content: flex-start; padding: 6px 12px; width: max-content; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="halo" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><i></i>Carnet de formation</div>
+    <div class="top-actions">
+      <button class="btn ghost" id="btnAddNote" type="button">+ Note</button>
+      <button class="btn ghost" id="btnAddEvent" type="button">+ Conférence</button>
+      <button class="btn" id="btnAddCourse" type="button">+ Cours</button>
+    </div>
+  </header>
+
+  <h1>Mes cours et mes conférences, au même endroit.</h1>
+  <p class="lede">Suis ta progression sur Coursera et edX, garde un œil sur les échéances et note les événements auxquels tu as choisi de participer.</p>
+  <div class="today" id="today"></div>
+
+  <div class="banner" id="sampleBanner" hidden>
+    <span>Les éléments affichés sont des exemples pour montrer l'outil.</span>
+    <button class="btn ghost sm" id="btnClearSamples" type="button">Retirer les exemples</button>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="section">
+    <div class="sec-head">
+      <div>
+        <h2>À venir</h2>
+        <p>Débuts de cours, échéances et conférences des 4 prochains mois.</p>
+      </div>
+    </div>
+    <div class="upcoming" id="upcoming"></div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabCourses" aria-selected="true" type="button">Cours <span class="n" id="nCourses"></span></button>
+        <button class="tab" role="tab" id="tabEvents" aria-selected="false" type="button">Conférences <span class="n" id="nEvents"></span></button>
+        <button class="tab" role="tab" id="tabNotes" aria-selected="false" type="button">Notes <span class="n" id="nNotes"></span></button>
+      </div>
+    </div>
+
+    <div id="panelCourses">
+      <div class="filters">
+        <button class="chip" data-plat="all" aria-pressed="true" type="button">Toutes</button>
+        <button class="chip" data-plat="coursera" aria-pressed="false" type="button"><span class="dot coursera"></span>Coursera</button>
+        <button class="chip" data-plat="edx" aria-pressed="false" type="button"><span class="dot edx"></span>edX</button>
+        <button class="chip" data-plat="autre" aria-pressed="false" type="button"><span class="dot autre"></span>Autre</button>
+        <span style="width:4px"></span>
+        <button class="chip" data-cstat="active" aria-pressed="true" type="button">Actifs</button>
+        <button class="chip" data-cstat="done" aria-pressed="false" type="button">Terminés</button>
+        <button class="chip" data-cstat="all" aria-pressed="false" type="button">Tous</button>
+        <input class="search" id="searchCourses" type="search" placeholder="Rechercher un cours" aria-label="Rechercher un cours">
+      </div>
+      <div class="list" id="courseList"></div>
+    </div>
+
+    <div id="panelEvents" hidden>
+      <div class="filters">
+        <button class="chip" data-estat="upcoming" aria-pressed="true" type="button">À venir</button>
+        <button class="chip" data-estat="past" aria-pressed="false" type="button">Passées</button>
+        <button class="chip" data-estat="all" aria-pressed="false" type="button">Toutes</button>
+        <input class="search" id="searchEvents" type="search" placeholder="Rechercher une conférence" aria-label="Rechercher une conférence">
+      </div>
+      <div class="list" id="eventList"></div>
+    </div>
+
+    <div id="panelNotes" hidden>
+      <div class="filters">
+        <select class="search" id="noteFilter" aria-label="Filtrer par cours"></select>
+        <input class="search" id="searchNotes" type="search" placeholder="Rechercher une note" aria-label="Rechercher une note">
+      </div>
+      <div class="nb-grid" id="noteGrid"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Données enregistrées dans ce navigateur.</span>
+    <button type="button" id="btnExport">Exporter (JSON)</button>
+    <button type="button" id="btnImport">Importer</button>
+    <button type="button" id="btnIcsAll">Exporter les conférences (.ics)</button>
+    <input type="file" id="fileImport" accept="application/json,.json" hidden>
+  </footer>
+</div>
+
+<!-- Dialog : cours -->
+<dialog id="dlgCourse">
+  <form id="formCourse" method="dialog" novalidate>
+    <h3 id="dlgCourseTitle">Nouveau cours</h3>
+    <label class="field"><span>Intitulé du cours</span><input id="c_title" name="title" required placeholder="Ex. Machine Learning Specialization"></label>
+    <div class="grid2">
+      <label class="field"><span>Plateforme</span>
+        <select id="c_platform" name="platform">
+          <option value="coursera">Coursera</option>
+          <option value="edx">edX</option>
+          <option value="autre">Autre</option>
+        </select>
+      </label>
+      <label class="field"><span>Établissement</span><input id="c_provider" name="provider" placeholder="Ex. Stanford, HarvardX"></label>
+    </div>
+    <label class="field"><span>Lien du cours</span><input id="c_url" name="url" type="url" placeholder="https://www.coursera.org/learn/…"></label>
+    <div class="grid2">
+      <label class="field"><span>Statut</span>
+        <select id="c_status" name="status">
+          <option value="todo">À commencer</option>
+          <option value="doing">En cours</option>
+          <option value="paused">En pause</option>
+          <option value="done">Terminé</option>
+          <option value="dropped">Abandonné</option>
+        </select>
+      </label>
+      <label class="field"><span>Certificat</span>
+        <select id="c_cert" name="cert">
+          <option value="none">Pas de certificat</option>
+          <option value="aim">Certificat visé</option>
+          <option value="obtained">Certificat obtenu</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid2">
+      <label class="field"><span>Début</span><input id="c_start" name="start" type="date"></label>
+      <label class="field"><span>Fin / échéance</span><input id="c_end" name="end" type="date"></label>
+    </div>
+    <div class="grid2">
+      <label class="field"><span>Progression : <b id="c_progress_out">0 %</b></span><input id="c_progress" name="progress" type="range" min="0" max="100" step="5" value="0"></label>
+      <label class="field"><span>Heures par semaine</span><input id="c_hours" name="hours" type="number" min="0" max="80" step="0.5" placeholder="Ex. 4"></label>
+    </div>
+    <label class="field"><span>Notes</span><textarea id="c_notes" name="notes" placeholder="Module en cours, points à revoir…"></textarea></label>
+    <p class="err" id="c_err" hidden></p>
+    <div class="dlg-foot">
+      <button class="btn danger sm" id="c_delete" type="button" hidden>Supprimer</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" type="button" data-close>Annuler</button>
+      <button class="btn" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Dialog : conférence -->
+<dialog id="dlgEvent">
+  <form id="formEvent" method="dialog" novalidate>
+    <h3 id="dlgEventTitle">Nouvelle conférence</h3>
+    <label class="field"><span>Nom de l'événement</span><input id="e_name" name="name" required placeholder="Ex. Blender Conference 2026"></label>
+    <div class="grid2">
+      <label class="field"><span>Du</span><input id="e_start" name="start" type="date" required></label>
+      <label class="field"><span>Au</span><input id="e_end" name="end" type="date"></label>
+    </div>
+    <div class="grid2">
+      <label class="field"><span>Lieu</span><input id="e_location" name="location" placeholder="Ex. Amsterdam"></label>
+      <label class="field"><span>Format</span>
+        <select id="e_format" name="format">
+          <option value="onsite">Sur place</option>
+          <option value="online">En ligne</option>
+          <option value="hybrid">Hybride</option>
+        </select>
+      </label>
+    </div>
+    <label class="field"><span>Site de l'événement</span><input id="e_url" name="url" type="url" placeholder="https://…"></label>
+    <div class="grid2">
+      <label class="field"><span>Ma participation</span>
+        <select id="e_status" name="status">
+          <option value="maybe">Envisagé</option>
+          <option value="registered">Inscrit</option>
+          <option value="attended">Participé</option>
+          <option value="cancelled">Annulé</option>
+        </select>
+      </label>
+      <label class="field"><span>Prix du billet (€)</span><input id="e_price" name="price" type="number" min="0" step="1" placeholder="0 si gratuit"></label>
+    </div>
+    <label class="field"><span>Notes</span><textarea id="e_notes" name="notes" placeholder="Talks à voir, logistique, contacts…"></textarea></label>
+    <p class="err" id="e_err" hidden></p>
+    <div class="dlg-foot">
+      <button class="btn danger sm" id="e_delete" type="button" hidden>Supprimer</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" type="button" data-close>Annuler</button>
+      <button class="btn" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Dialog : nouvelle note -->
+<dialog id="dlgNote">
+  <form id="formNote" method="dialog" novalidate>
+    <h3>Nouvelle note</h3>
+    <label class="field"><span>Titre</span><input id="n_title" placeholder="Ex. Semaine 3 : réseaux de neurones"></label>
+    <label class="field"><span>Rattachée à</span><select id="n_ref"></select></label>
+    <div class="field"><span>Papier</span>
+      <div class="paper-pick" id="paperPick"></div>
+    </div>
+    <div class="dlg-foot">
+      <span class="spacer"></span>
+      <button class="btn ghost" type="button" data-close>Annuler</button>
+      <button class="btn" type="submit">Créer et écrire</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Éditeur de notes -->
+<div class="editor" id="editor" hidden>
+  <div class="ed-bar">
+    <button class="btn ghost sm" id="edBack" type="button">← Notes</button>
+    <div class="ed-head">
+      <input id="edTitle" aria-label="Titre de la note" maxlength="120">
+      <div class="ed-ref" id="edRef"></div>
+    </div>
+    <span class="ed-status" id="edStatus"></span>
+    <div class="ed-group">
+      <button class="tbtn" id="edUndo" type="button" title="Annuler (Ctrl+Z)" aria-label="Annuler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+      <button class="tbtn" id="edRedo" type="button" title="Rétablir (Ctrl+Maj+Z)" aria-label="Rétablir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+    </div>
+    <div class="ed-group">
+      <button class="tbtn" id="edZoomOut" type="button" aria-label="Dézoomer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+      <span class="zoomv" id="edZoomV">100 %</span>
+      <button class="tbtn" id="edZoomIn" type="button" aria-label="Zoomer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button>
+    </div>
+    <button class="btn ghost sm" id="edPdf" type="button">Exporter en PDF</button>
+    <button class="btn danger sm" id="edDelete" type="button">Supprimer</button>
+  </div>
+  <div class="ed-toolbar">
+    <div class="toolpill" id="toolpill">
+      <button class="tbtn" data-tool="pen" type="button" title="Stylo (P)" aria-label="Stylo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/><path d="m14.5 5.5 3 3"/></svg></button>
+      <button class="tbtn" data-tool="hl" type="button" title="Surligneur (H)" aria-label="Surligneur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-5 5v3h6l5-5"/><path d="m21 7-7.5 7.5-5-5L16 2Z"/><path d="M3 22h18" opacity=".5"/></svg></button>
+      <button class="tbtn" data-tool="eraser" type="button" title="Gomme (E)" aria-label="Gomme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3a1.5 1.5 0 0 1 0-2.1l9.9-9.9a1.5 1.5 0 0 1 2.1 0l5.6 5.6a1.5 1.5 0 0 1 0 2.1L13 21"/><path d="M7 21h14"/><path d="m5.5 11.5 7 7"/></svg></button>
+      <button class="tbtn" data-tool="text" type="button" title="Texte (T)" aria-label="Texte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6V4h14v2"/><path d="M12 4v16"/><path d="M9 20h6"/></svg></button>
+      <span class="tsep"></span>
+      <span class="ed-group" id="swatches"></span>
+      <span class="tsep"></span>
+      <span class="ed-group" id="sizes"></span>
+      <span class="tsep"></span>
+      <label class="stylus" title="Avec un stylet, le doigt sert à faire défiler"><input type="checkbox" id="edStylus">Stylet seul</label>
+    </div>
+  </div>
+  <div class="ed-scroll" id="edScroll">
+    <div class="ed-pages" id="edPages"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const KEY = 'carnet-formation.v1';
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+  const PLATFORMS = { coursera: 'Coursera', edx: 'edX', autre: 'Autre' };
+  const C_STATUS = { todo: 'À commencer', doing: 'En cours', paused: 'En pause', done: 'Terminé', dropped: 'Abandonné' };
+  const E_STATUS = { maybe: 'Envisagé', registered: 'Inscrit', attended: 'Participé', cancelled: 'Annulé' };
+  const FORMATS = { onsite: 'Sur place', online: 'En ligne', hybrid: 'Hybride' };
+  const CERT = { none: '', aim: 'Certificat visé', obtained: 'Certificat obtenu' };
+
+  // ---------- Dates ----------
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parse = (s) => { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const daysUntil = (s) => Math.round((parse(s) - today) / 86400000);
+  const fmtShort = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
+  const fmtLong = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const fmtMonth = new Intl.DateTimeFormat('fr-FR', { month: 'short' });
+  const fmtRange = (a, b) => {
+    const A = parse(a), B = parse(b);
+    if (!A) return '';
+    if (!B || a === b) return fmtLong.format(A);
+    if (A.getFullYear() === B.getFullYear()) return `${fmtShort.format(A)} → ${fmtLong.format(B)}`;
+    return `${fmtLong.format(A)} → ${fmtLong.format(B)}`;
+  };
+  const countdown = (n) => n === 0 ? "Aujourd'hui" : n === 1 ? 'Demain' : n > 0 ? `J-${n}` : `Il y a ${-n} j`;
+
+  // ---------- Stockage ----------
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+  function seed() {
+    const d = (n) => iso(addDays(today, n));
+    return {
+      courses: [
+        { id: uid(), sample: true, title: 'Machine Learning Specialization', platform: 'coursera', provider: 'DeepLearning.AI · Stanford', url: 'https://www.coursera.org/specializations/machine-learning-introduction', status: 'doing', cert: 'aim', start: d(-40), end: d(47), progress: 45, hours: 5, notes: 'Cours 2, semaine 3 : réseaux de neurones.' },
+        { id: uid(), sample: true, title: "CS50's Introduction to Computer Science", platform: 'edx', provider: 'HarvardX', url: 'https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science', status: 'doing', cert: 'aim', start: d(-70), end: d(12), progress: 70, hours: 6, notes: 'Problem set 7 (SQL) à rendre.' },
+        { id: uid(), sample: true, title: 'Game Design: Art and Concepts', platform: 'coursera', provider: 'CalArts', url: 'https://www.coursera.org/specializations/game-design', status: 'todo', cert: 'none', start: d(13), end: d(90), progress: 0, hours: 3, notes: '' },
+        { id: uid(), sample: true, title: 'Introduction to Linux', platform: 'edx', provider: 'LinuxFoundationX', url: 'https://www.edx.org/learn/linux/the-linux-foundation-introduction-to-linux', status: 'done', cert: 'obtained', start: d(-150), end: d(-95), progress: 100, hours: 0, notes: '' },
+      ],
+      events: [
+        { id: uid(), sample: true, name: 'Blender Conference', start: d(23), end: d(25), location: 'Amsterdam', format: 'onsite', url: 'https://conference.blender.org/', status: 'registered', price: 250, notes: 'Talks géométrie nodale + rigging.' },
+        { id: uid(), sample: true, name: 'Paris Games Week', start: d(30), end: d(34), location: 'Paris, Porte de Versailles', format: 'onsite', url: 'https://www.parisgamesweek.com/', status: 'maybe', price: 25, notes: '' },
+        { id: uid(), sample: true, name: 'Meetup Paris.js', start: d(8), end: d(8), location: 'En ligne', format: 'online', url: '', status: 'registered', price: 0, notes: '' },
+        { id: uid(), sample: true, name: 'Devoxx France', start: d(-160), end: d(-158), location: 'Paris, Palais des Congrès', format: 'onsite', url: 'https://www.devoxx.fr/', status: 'attended', price: 0, notes: 'Revoir le talk sur les LLM en local.' },
+      ],
+    };
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s && Array.isArray(s.courses) && Array.isArray(s.events)) return s;
+      }
+    } catch (e) {}
+    return seed();
+  }
+  let state = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  // ---------- Utilitaires ----------
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeUrl = (u) => /^https?:\/\//i.test(u || '') ? u : '';
+  let toastTimer;
+  function toast(msg) {
+    const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+  function download(name, content, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // ---------- Filtres ----------
+  const ui = { tab: 'courses', plat: 'all', cstat: 'active', estat: 'upcoming', qc: '', qe: '' };
+
+  // ---------- Rendu ----------
+  function renderStats() {
+    const doing = state.courses.filter((c) => c.status === 'doing');
+    const avg = doing.length ? Math.round(doing.reduce((a, c) => a + (+c.progress || 0), 0) / doing.length) : 0;
+    const hours = doing.reduce((a, c) => a + (+c.hours || 0), 0);
+    const certs = state.courses.filter((c) => c.cert === 'obtained').length;
+    const aimed = state.courses.filter((c) => c.cert === 'aim' && c.status !== 'dropped').length;
+    const upEv = state.events.filter((e) => (e.status === 'registered' || e.status === 'maybe') && daysUntil(e.end || e.start) >= 0)
+      .sort((a, b) => a.start.localeCompare(b.start));
+    const reg = upEv.filter((e) => e.status === 'registered');
+    const next = reg[0] || upEv[0];
+    const nextTxt = next ? `Prochaine : ${esc(next.name)}, ${countdown(daysUntil(next.start)).toLowerCase()}` : 'Aucune prévue';
+    $('#stats').innerHTML = `
+      <div class="stat"><div class="k">Cours en cours</div><div class="v">${doing.length}</div><div class="s">${doing.length ? `Progression moyenne ${avg} %` : 'Aucun cours actif'}</div></div>
+      <div class="stat"><div class="k">Charge hebdomadaire</div><div class="v">${hours.toLocaleString('fr-FR')}<small>h</small></div><div class="s">Sur les cours en cours</div></div>
+      <div class="stat"><div class="k">Certificats obtenus</div><div class="v">${certs}</div><div class="s">${aimed} en préparation</div></div>
+      <div class="stat"><div class="k">Conférences inscrites</div><div class="v">${reg.length}</div><div class="s">${nextTxt}</div></div>`;
+  }
+
+  function renderUpcoming() {
+    const horizon = 122;
+    const items = [];
+    for (const c of state.courses) {
+      if (c.status === 'todo' && c.start && daysUntil(c.start) >= 0 && daysUntil(c.start) <= horizon)
+        items.push({ date: c.start, title: c.title, meta: `Début du cours · ${PLATFORMS[c.platform] || ''}`, plat: c.platform });
+      if ((c.status === 'doing' || c.status === 'paused') && c.end && daysUntil(c.end) >= 0 && daysUntil(c.end) <= horizon)
+        items.push({ date: c.end, title: c.title, meta: `Échéance · ${PLATFORMS[c.platform] || ''} · ${c.progress || 0} % fait`, plat: c.platform });
+    }
+    for (const e of state.events) {
+      if ((e.status === 'registered' || e.status === 'maybe') && e.start && daysUntil(e.end || e.start) >= 0 && daysUntil(e.start) <= horizon)
+        items.push({ date: e.start, title: e.name, meta: `Conférence · ${E_STATUS[e.status]}${e.location ? ' · ' + e.location : ''}`, ev: true });
+    }
+    items.sort((a, b) => a.date.localeCompare(b.date));
+    if (!items.length) {
+      $('#upcoming').innerHTML = `<div class="empty">Rien de prévu pour l'instant. Ajoute un cours avec une date de début ou une conférence.</div>`;
+      return;
+    }
+    $('#upcoming').innerHTML = items.slice(0, 7).map((it) => {
+      const n = daysUntil(it.date);
+      const D = parse(it.date);
+      return `<div class="up-row">
+        <div class="up-date"><b>${D.getDate()} ${esc(fmtMonth.format(D))}</b>${D.getFullYear()}</div>
+        <div class="up-main"><div class="t">${esc(it.title)}</div><div class="m">${it.ev ? '' : `<span class="dot ${esc(it.plat)}"></span> `}${esc(it.meta)}</div></div>
+        <div class="countdown ${n <= 7 ? 'soon' : ''}">${countdown(Math.max(n, 0))}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function courseCard(c) {
+    const url = safeUrl(c.url);
+    const title = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(c.title)}</a>` : esc(c.title);
+    const meta = [];
+    if (c.start || c.end) {
+      if (c.start && c.end) meta.push(fmtRange(c.start, c.end));
+      else if (c.start) meta.push(`Début ${fmtLong.format(parse(c.start))}`);
+      else meta.push(`Échéance ${fmtLong.format(parse(c.end))}`);
+    }
+    if (c.status === 'doing' && c.end) {
+      const n = daysUntil(c.end);
+      meta.push(n >= 0 ? `${n} j restants` : `Échéance dépassée de ${-n} j`);
+    }
+    if (+c.hours) meta.push(`${(+c.hours).toLocaleString('fr-FR')} h / semaine`);
+    if (CERT[c.cert]) meta.push(CERT[c.cert]);
+    return `<article class="card" data-id="${esc(c.id)}">
+      <div class="card-top">
+        <div class="card-main">
+          <div class="eyebrow"><span class="dot ${esc(c.platform)}"></span><span class="plat">${esc(PLATFORMS[c.platform] || 'Autre')}</span>${c.provider ? `<span>${esc(c.provider)}</span>` : ''}</div>
+          <div class="title">${title}</div>
+        </div>
+        <span class="pill ${esc(c.status)}">${esc(C_STATUS[c.status] || '')}</span>
+      </div>
+      ${meta.length ? `<div class="meta">${meta.map((m) => `<span>${esc(m)}</span>`).join('')}</div>` : ''}
+      ${c.status !== 'dropped' ? `<div class="progress">
+        <input type="range" min="0" max="100" step="5" value="${+c.progress || 0}" aria-label="Progression de ${esc(c.title)}" data-progress="${esc(c.id)}" id="p_${esc(c.id)}">
+        <output>${+c.progress || 0} %</output>
+      </div>` : ''}
+      ${c.notes ? `<p class="notes">${esc(c.notes)}</p>` : ''}
+      <div class="card-foot"><div class="acts">
+        ${url ? `<a class="btn ghost sm" href="${esc(url)}" target="_blank" rel="noopener">Ouvrir le cours ↗</a>` : ''}
+        <button class="btn ghost sm" type="button" data-notes-kind="course" data-notes-id="${esc(c.id)}">Notes${noteCount('course', c.id) ? ' · ' + noteCount('course', c.id) : ''}</button>
+        <button class="btn ghost sm" type="button" data-edit-course="${esc(c.id)}">Modifier</button>
+      </div></div>
+    </article>`;
+  }
+
+  function renderCourses() {
+    const q = ui.qc.trim().toLowerCase();
+    const order = { doing: 0, paused: 1, todo: 2, done: 3, dropped: 4 };
+    const list = state.courses.filter((c) => {
+      if (ui.plat !== 'all' && c.platform !== ui.plat) return false;
+      if (ui.cstat === 'active' && !['doing', 'todo', 'paused'].includes(c.status)) return false;
+      if (ui.cstat === 'done' && c.status !== 'done') return false;
+      if (q && !`${c.title} ${c.provider} ${c.notes}`.toLowerCase().includes(q)) return false;
+      return true;
+    }).sort((a, b) => (order[a.status] - order[b.status]) || (a.end || '9999').localeCompare(b.end || '9999'));
+    $('#nCourses').textContent = state.courses.length;
+    $('#courseList').innerHTML = list.length ? list.map(courseCard).join('')
+      : `<div class="card empty">${state.courses.length ? 'Aucun cours ne correspond à ces filtres.' : 'Aucun cours pour le moment. Clique sur « + Cours » pour ajouter ton premier cours Coursera ou edX.'}</div>`;
+  }
+
+  function eventCard(e) {
+    const url = safeUrl(e.url);
+    const S = parse(e.start);
+    const past = daysUntil(e.end || e.start) < 0;
+    const n = daysUntil(e.start);
+    const meta = [fmtRange(e.start, e.end)];
+    if (e.location) meta.push(e.location);
+    meta.push(FORMATS[e.format] || '');
+    if (e.price !== '' && e.price != null) meta.push(+e.price ? `${(+e.price).toLocaleString('fr-FR')} €` : 'Gratuit');
+    return `<article class="card ev ${past ? 'past' : ''}" data-id="${esc(e.id)}">
+      <div class="cal"><div class="mo">${esc(fmtMonth.format(S))}</div><div class="d">${S.getDate()}</div><div class="y">${S.getFullYear()}</div></div>
+      <div class="ev-body">
+        <div class="card-top">
+          <div class="card-main">
+            <div class="title">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(e.name)}</a>` : esc(e.name)}</div>
+            <div class="meta" style="margin-top:4px">${meta.filter(Boolean).map((m) => `<span>${esc(m)}</span>`).join('')}</div>
+          </div>
+          <span class="pill ${esc(e.status)}">${esc(E_STATUS[e.status] || '')}</span>
+        </div>
+        ${e.notes ? `<p class="notes">${esc(e.notes)}</p>` : ''}
+        <div class="card-foot">
+          <span class="countdown ${!past && n <= 7 ? 'soon' : ''}">${past ? 'Passée' : n <= 0 ? 'En cours' : countdown(n)}</span>
+          <div class="acts">
+            ${!past && e.status !== 'cancelled' ? `<button class="btn ghost sm" type="button" data-ics="${esc(e.id)}">Ajouter au calendrier</button>` : ''}
+            <button class="btn ghost sm" type="button" data-notes-kind="event" data-notes-id="${esc(e.id)}">Notes${noteCount('event', e.id) ? ' · ' + noteCount('event', e.id) : ''}</button>
+            <button class="btn ghost sm" type="button" data-edit-event="${esc(e.id)}">Modifier</button>
+          </div>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function renderEvents() {
+    const q = ui.qe.trim().toLowerCase();
+    let list = state.events.filter((e) => {
+      const past = daysUntil(e.end || e.start) < 0;
+      if (ui.estat === 'upcoming' && past) return false;
+      if (ui.estat === 'past' && !past) return false;
+      if (q && !`${e.name} ${e.location} ${e.notes}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    list.sort((a, b) => ui.estat === 'past' ? b.start.localeCompare(a.start) : a.start.localeCompare(b.start));
+    $('#nEvents').textContent = state.events.length;
+    $('#eventList').innerHTML = list.length ? list.map(eventCard).join('')
+      : `<div class="card empty">${state.events.length ? 'Aucune conférence dans cette vue.' : 'Aucune conférence pour le moment. Clique sur « + Conférence » pour noter un événement.'}</div>`;
+  }
+
+  function render() {
+    $('#sampleBanner').hidden = ![...state.courses, ...state.events, ...notes].some((x) => x.sample);
+    renderStats(); renderUpcoming(); renderCourses(); renderEvents(); renderNotes();
+  }
+
+  // ---------- Dialogues ----------
+  let editing = null;
+  function armDelete(btn, onConfirm, label = 'Supprimer') {
+    btn.classList.remove('armed'); btn.textContent = label;
+    btn.onclick = () => {
+      if (!btn.classList.contains('armed')) { btn.classList.add('armed'); btn.textContent = 'Confirmer la suppression'; return; }
+      onConfirm();
+    };
+  }
+
+  function openCourse(id) {
+    const c = id ? state.courses.find((x) => x.id === id) : null;
+    editing = c ? c.id : null;
+    $('#dlgCourseTitle').textContent = c ? 'Modifier le cours' : 'Nouveau cours';
+    const v = c || { title: '', platform: ui.plat !== 'all' ? ui.plat : 'coursera', provider: '', url: '', status: 'doing', cert: 'aim', start: iso(today), end: '', progress: 0, hours: '', notes: '' };
+    for (const k of ['title', 'platform', 'provider', 'url', 'status', 'cert', 'start', 'end', 'progress', 'hours', 'notes']) $('#c_' + k).value = v[k] ?? '';
+    $('#c_progress_out').textContent = `${v.progress || 0} %`;
+    $('#c_err').hidden = true;
+    const del = $('#c_delete'); del.hidden = !c;
+    armDelete(del, () => {
+      state.courses = state.courses.filter((x) => x.id !== editing);
+      save(); render(); $('#dlgCourse').close(); toast('Cours supprimé');
+    });
+    $('#dlgCourse').showModal();
+    $('#c_title').focus();
+  }
+
+  function openEvent(id) {
+    const e = id ? state.events.find((x) => x.id === id) : null;
+    editing = e ? e.id : null;
+    $('#dlgEventTitle').textContent = e ? 'Modifier la conférence' : 'Nouvelle conférence';
+    const v = e || { name: '', start: '', end: '', location: '', format: 'onsite', url: '', status: 'registered', price: '', notes: '' };
+    for (const k of ['name', 'start', 'end', 'location', 'format', 'url', 'status', 'price', 'notes']) $('#e_' + k).value = v[k] ?? '';
+    $('#e_err').hidden = true;
+    const del = $('#e_delete'); del.hidden = !e;
+    armDelete(del, () => {
+      state.events = state.events.filter((x) => x.id !== editing);
+      save(); render(); $('#dlgEvent').close(); toast('Conférence supprimée');
+    });
+    $('#dlgEvent').showModal();
+    $('#e_name').focus();
+  }
+
+  $('#formCourse').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const g = (k) => $('#c_' + k).value.trim();
+    const err = $('#c_err');
+    if (!g('title')) { err.textContent = "Donne un intitulé au cours."; err.hidden = false; return; }
+    if (g('start') && g('end') && g('end') < g('start')) { err.textContent = 'La date de fin doit être après la date de début.'; err.hidden = false; return; }
+    const data = {
+      title: g('title'), platform: g('platform'), provider: g('provider'), url: g('url'), status: g('status'), cert: g('cert'),
+      start: g('start'), end: g('end'), progress: +g('progress') || 0, hours: g('hours') === '' ? '' : +g('hours'), notes: g('notes'),
+    };
+    if (data.status === 'done') data.progress = 100;
+    if (editing) Object.assign(state.courses.find((x) => x.id === editing), data, { sample: false });
+    else state.courses.push({ id: uid(), ...data });
+    save(); render(); $('#dlgCourse').close();
+    toast(editing ? 'Cours mis à jour' : 'Cours ajouté');
+  });
+
+  $('#formEvent').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const g = (k) => $('#e_' + k).value.trim();
+    const err = $('#e_err');
+    if (!g('name')) { err.textContent = "Donne un nom à l'événement."; err.hidden = false; return; }
+    if (!g('start')) { err.textContent = 'Indique la date de début.'; err.hidden = false; return; }
+    if (g('end') && g('end') < g('start')) { err.textContent = 'La date de fin doit être après la date de début.'; err.hidden = false; return; }
+    const data = {
+      name: g('name'), start: g('start'), end: g('end') || g('start'), location: g('location'), format: g('format'),
+      url: g('url'), status: g('status'), price: g('price') === '' ? '' : +g('price'), notes: g('notes'),
+    };
+    if (editing) Object.assign(state.events.find((x) => x.id === editing), data, { sample: false });
+    else state.events.push({ id: uid(), ...data });
+    save(); render(); $('#dlgEvent').close();
+    toast(editing ? 'Conférence mise à jour' : 'Conférence ajoutée');
+  });
+
+  $('#c_progress').addEventListener('input', (e) => { $('#c_progress_out').textContent = `${e.target.value} %`; });
+  $$('[data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
+  $$('dialog').forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
+
+  // ---------- ICS ----------
+  function icsEscape(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, (m) => '\\' + m); }
+  function icsFor(events) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Carnet de formation//FR', 'CALSCALE:GREGORIAN'];
+    for (const e of events) {
+      const endExcl = iso(addDays(parse(e.end || e.start), 1)).replace(/-/g, '');
+      lines.push('BEGIN:VEVENT', `UID:${e.id}@carnet-formation`, `DTSTAMP:${stamp}`,
+        `DTSTART;VALUE=DATE:${e.start.replace(/-/g, '')}`, `DTEND;VALUE=DATE:${endExcl}`,
+        `SUMMARY:${icsEscape(e.name)}`);
+      if (e.location) lines.push(`LOCATION:${icsEscape(e.location)}`);
+      if (safeUrl(e.url)) lines.push(`URL:${e.url}`);
+      if (e.notes) lines.push(`DESCRIPTION:${icsEscape(e.notes)}`);
+      lines.push('END:VEVENT');
+    }
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+  }
+  const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  // ---------- Événements UI ----------
+  $('#btnAddCourse').addEventListener('click', () => openCourse(null));
+  $('#btnAddEvent').addEventListener('click', () => openEvent(null));
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-edit-course],[data-edit-event],[data-ics],[data-plat],[data-cstat],[data-estat]');
+    if (!t) return;
+    if (t.dataset.editCourse) openCourse(t.dataset.editCourse);
+    else if (t.dataset.editEvent) openEvent(t.dataset.editEvent);
+    else if (t.dataset.ics) {
+      const ev = state.events.find((x) => x.id === t.dataset.ics);
+      download(`${slug(ev.name) || 'evenement'}.ics`, icsFor([ev]), 'text/calendar');
+      toast('Fichier calendrier téléchargé');
+    } else if (t.dataset.plat) {
+      ui.plat = t.dataset.plat; $$('[data-plat]').forEach((b) => b.setAttribute('aria-pressed', b === t)); renderCourses();
+    } else if (t.dataset.cstat) {
+      ui.cstat = t.dataset.cstat; $$('[data-cstat]').forEach((b) => b.setAttribute('aria-pressed', b === t)); renderCourses();
+    } else if (t.dataset.estat) {
+      ui.estat = t.dataset.estat; $$('[data-estat]').forEach((b) => b.setAttribute('aria-pressed', b === t)); renderEvents();
+    }
+  });
+
+  // Progression directement depuis la carte
+  document.addEventListener('input', (e) => {
+    if (!e.target.dataset.progress) return;
+    e.target.nextElementSibling.textContent = `${e.target.value} %`;
+  });
+  document.addEventListener('change', (e) => {
+    const id = e.target.dataset.progress; if (!id) return;
+    const c = state.courses.find((x) => x.id === id);
+    c.progress = +e.target.value;
+    if (c.progress === 100 && c.status !== 'done') { c.status = 'done'; toast('Bravo, cours terminé'); }
+    else if (c.progress > 0 && c.status === 'todo') c.status = 'doing';
+    save(); render();
+  });
+
+  function setTab(tab) {
+    ui.tab = tab;
+    $('#tabCourses').setAttribute('aria-selected', tab === 'courses');
+    $('#tabEvents').setAttribute('aria-selected', tab === 'events');
+    $('#tabNotes').setAttribute('aria-selected', tab === 'notes');
+    $('#panelCourses').hidden = tab !== 'courses';
+    $('#panelEvents').hidden = tab !== 'events';
+    $('#panelNotes').hidden = tab !== 'notes';
+  }
+  $('#tabCourses').addEventListener('click', () => setTab('courses'));
+  $('#tabEvents').addEventListener('click', () => setTab('events'));
+  $('#tabNotes').addEventListener('click', () => setTab('notes'));
+  $('#searchCourses').addEventListener('input', (e) => { ui.qc = e.target.value; renderCourses(); });
+  $('#searchEvents').addEventListener('input', (e) => { ui.qe = e.target.value; renderEvents(); });
+
+  $('#btnClearSamples').addEventListener('click', () => {
+    state.courses = state.courses.filter((x) => !x.sample);
+    state.events = state.events.filter((x) => !x.sample);
+    for (const n of notes.filter((x) => x.sample)) NotesDB.del(n.id);
+    notes = notes.filter((x) => !x.sample);
+    save(); render(); toast('Exemples retirés');
+  });
+
+  $('#btnExport').addEventListener('click', () => {
+    download(`carnet-formation-${iso(today)}.json`, JSON.stringify({ ...state, notes }), 'application/json');
+    toast('Sauvegarde exportée');
+  });
+  $('#btnImport').addEventListener('click', () => $('#fileImport').click());
+  $('#fileImport').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const s = JSON.parse(await f.text());
+      if (!Array.isArray(s.courses) || !Array.isArray(s.events)) throw new Error();
+      if (Array.isArray(s.notes)) {
+        await NotesDB.clear();
+        notes = s.notes;
+        for (const n of notes) await NotesDB.put(n);
+      }
+      delete s.notes;
+      state = s; save(); render(); toast('Sauvegarde importée');
+    } catch (err) { toast("Ce fichier n'est pas une sauvegarde du carnet"); }
+    e.target.value = '';
+  });
+  $('#btnIcsAll').addEventListener('click', () => {
+    const evs = state.events.filter((e) => e.status === 'registered' || e.status === 'maybe');
+    if (!evs.length) { toast('Aucune conférence envisagée ou inscrite'); return; }
+    download('conferences.ics', icsFor(evs), 'text/calendar');
+    toast(`${evs.length} conférence${evs.length > 1 ? 's' : ''} exportée${evs.length > 1 ? 's' : ''}`);
+  });
+
+  // =====================================================================
+  // NOTES : carnets manuscrits rattachés à un cours ou une conférence
+  // =====================================================================
+  const PW = 1000, PH = 1414; // page A4 en unités logiques
+  const PAPERS = { lined: 'Lignée', grid: 'Quadrillée', dots: 'Pointillée', blank: 'Blanche' };
+  const INK = ['#1d1d1f', '#2456c9', '#c7372f', '#23875a', '#8a4fd6'];
+  const HL = ['#ffd84d', '#ff8fbd', '#7ccaff', '#94e88c'];
+  const SIZES = { pen: [2, 3.5, 6], hl: [16, 26, 38], eraser: [16, 32, 60], text: [20, 27.5, 36] };
+  const ZOOMS = [0.6, 0.8, 1, 1.25, 1.5, 2];
+  const DPR = () => Math.min(window.devicePixelRatio || 1, 2.5);
+  const r1 = (n) => Math.round(n * 10) / 10;
+  let notes = [];
+
+  // Stockage des notes dans IndexedDB (les tracés sont trop lourds pour localStorage)
+  const NotesDB = (() => {
+    let dbp = null;
+    function open() {
+      if (dbp) return dbp;
+      dbp = new Promise((res) => {
+        try {
+          const r = indexedDB.open('carnet-formation', 1);
+          r.onupgradeneeded = () => r.result.createObjectStore('notes', { keyPath: 'id' });
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => res(null);
+        } catch (e) { res(null); }
+      });
+      return dbp;
+    }
+    async function run(mode, fn) {
+      const db = await open();
+      if (!db) return null;
+      return new Promise((res) => {
+        const t = db.transaction('notes', mode);
+        const r = fn(t.objectStore('notes'));
+        t.oncomplete = () => res(r && r.result);
+        t.onerror = () => res(null);
+      });
+    }
+    return {
+      all: async () => (await run('readonly', (s) => s.getAll())) || [],
+      put: (n) => run('readwrite', (s) => s.put(n)),
+      del: (id) => run('readwrite', (s) => s.delete(id)),
+      clear: () => run('readwrite', (s) => s.clear()),
+    };
+  })();
+
+  function noteCount(kind, id) { return notes.filter((n) => n.ref && n.ref.kind === kind && n.ref.id === id).length; }
+  const newPage = (paper) => ({ id: uid(), paper, strokes: [], texts: [] });
+
+  function refInfo(ref) {
+    if (ref && ref.kind === 'course') {
+      const c = state.courses.find((x) => x.id === ref.id);
+      return c ? { label: c.title, dot: c.platform, kind: PLATFORMS[c.platform] } : { label: 'Cours supprimé', dot: 'autre', kind: '' };
+    }
+    if (ref && ref.kind === 'event') {
+      const e = state.events.find((x) => x.id === ref.id);
+      return e ? { label: e.name, dot: '', kind: 'Conférence' } : { label: 'Conférence supprimée', dot: '', kind: '' };
+    }
+    return { label: 'Sans rattachement', dot: '', kind: '' };
+  }
+  const refHtml = (ref) => {
+    const r = refInfo(ref);
+    return `${r.dot ? `<span class="dot ${esc(r.dot)}"></span>` : ''}<span>${esc(r.kind ? r.kind + ' · ' : '')}${esc(r.label)}</span>`;
+  };
+  function refOptions(includeAll) {
+    let h = includeAll ? '<option value="all">Tous les cours et conférences</option>' : '<option value="">Sans rattachement</option>';
+    if (state.courses.length) h += '<optgroup label="Cours">' + state.courses.map((c) => `<option value="course:${esc(c.id)}">${esc(c.title)}</option>`).join('') + '</optgroup>';
+    if (state.events.length) h += '<optgroup label="Conférences">' + state.events.map((e) => `<option value="event:${esc(e.id)}">${esc(e.name)}</option>`).join('') + '</optgroup>';
+    return h;
+  }
+
+  // ---------- Dessin ----------
+  function drawPaper(ctx, paper, s) {
+    ctx.save();
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, PW * s, PH * s);
+    const lw = Math.max(0.5, 1.2 * s);
+    if (paper === 'lined') {
+      ctx.strokeStyle = 'rgba(80, 120, 170, 0.30)'; ctx.lineWidth = lw; ctx.beginPath();
+      for (let y = 150; y < PH - 40; y += 38) { ctx.moveTo(0, y * s); ctx.lineTo(PW * s, y * s); }
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(210, 80, 80, 0.35)'; ctx.beginPath(); ctx.moveTo(110 * s, 0); ctx.lineTo(110 * s, PH * s); ctx.stroke();
+    } else if (paper === 'grid') {
+      ctx.strokeStyle = 'rgba(80, 120, 170, 0.20)'; ctx.lineWidth = lw; ctx.beginPath();
+      for (let x = 38; x < PW; x += 38) { ctx.moveTo(x * s, 0); ctx.lineTo(x * s, PH * s); }
+      for (let y = 38; y < PH; y += 38) { ctx.moveTo(0, y * s); ctx.lineTo(PW * s, y * s); }
+      ctx.stroke();
+    } else if (paper === 'dots') {
+      ctx.fillStyle = 'rgba(60, 70, 90, 0.38)';
+      const r = Math.max(0.6, 1.9 * s);
+      for (let x = 38; x < PW; x += 38) for (let y = 38; y < PH; y += 38) { ctx.beginPath(); ctx.arc(x * s, y * s, r, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.restore();
+  }
+
+  const pf = (pr) => 0.35 + pr * 1.3; // pression → facteur d'épaisseur (souris = 1)
+  function drawStroke(ctx, st, s) {
+    const p = st.p, n = p.length / 3;
+    if (!n) return;
+    ctx.save();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = st.c; ctx.fillStyle = st.c;
+    if (st.t === 'hl') {
+      ctx.globalAlpha = 0.4; ctx.globalCompositeOperation = 'multiply'; ctx.lineCap = 'butt';
+      ctx.lineWidth = st.w * s; ctx.beginPath(); ctx.moveTo(p[0] * s, p[1] * s);
+      if (n === 1) ctx.lineTo(p[0] * s + 0.5, p[1] * s);
+      for (let i = 1; i < n; i++) ctx.lineTo(p[i * 3] * s, p[i * 3 + 1] * s);
+      ctx.stroke();
+    } else if (n === 1) {
+      ctx.beginPath(); ctx.arc(p[0] * s, p[1] * s, (st.w * pf(p[2]) * s) / 2, 0, Math.PI * 2); ctx.fill();
+    } else {
+      let px = p[0], py = p[1];
+      for (let i = 1; i < n; i++) {
+        const cx = p[i * 3], cy = p[i * 3 + 1], last = i === n - 1;
+        const nx = last ? cx : (cx + p[i * 3 + 3]) / 2, ny = last ? cy : (cy + p[i * 3 + 4]) / 2;
+        ctx.lineWidth = st.w * s * pf((p[i * 3 - 1] + p[i * 3 + 2]) / 2);
+        ctx.beginPath(); ctx.moveTo(px * s, py * s); ctx.quadraticCurveTo(cx * s, cy * s, nx * s, ny * s); ctx.stroke();
+        px = nx; py = ny;
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawTexts(ctx, texts, s) {
+    ctx.save();
+    for (const t of texts) {
+      const fs = t.size * s, lh = t.size * 1.38 * s, maxW = t.w * s;
+      ctx.font = `400 ${fs}px Inter, system-ui, -apple-system, 'Segoe UI', sans-serif`;
+      ctx.fillStyle = t.c; ctx.textBaseline = 'alphabetic';
+      let y = t.y * s + (lh - fs) / 2 + fs * 0.78;
+      for (const para of String(t.text).split('\n')) {
+        let line = '';
+        for (const word of para.split(' ')) {
+          const test = line ? line + ' ' + word : word;
+          if (line && ctx.measureText(test).width > maxW) { ctx.fillText(line, t.x * s, y); y += lh; line = word; }
+          else line = test;
+        }
+        ctx.fillText(line, t.x * s, y); y += lh;
+      }
+    }
+    ctx.restore();
+  }
+
+  function paintPage(ctx, pg, s, withTexts) {
+    drawPaper(ctx, pg.paper, s);
+    for (const st of pg.strokes) drawStroke(ctx, st, s);
+    if (withTexts) drawTexts(ctx, pg.texts, s);
+  }
+  function thumbCanvas(pg, cssW) {
+    const c = document.createElement('canvas'), d = DPR(), s = cssW / PW;
+    c.width = Math.round(cssW * d); c.height = Math.round(PH * s * d);
+    const ctx = c.getContext('2d'); ctx.scale(d, d); paintPage(ctx, pg, s, true);
+    return c;
+  }
+
+  // ---------- Liste des notes ----------
+  ui.nref = 'all'; ui.qn = '';
+  const thumbCache = new Map();
+  function renderNotes() {
+    const sel = $('#noteFilter');
+    sel.innerHTML = refOptions(true); sel.value = ui.nref;
+    if (sel.value !== ui.nref) { ui.nref = 'all'; sel.value = 'all'; }
+    $('#nNotes').textContent = notes.length;
+    const q = ui.qn.trim().toLowerCase();
+    const list = notes.filter((n) => {
+      if (ui.nref !== 'all' && (!n.ref || `${n.ref.kind}:${n.ref.id}` !== ui.nref)) return false;
+      if (q) {
+        const hay = `${n.title} ${refInfo(n.ref).label} ${n.pages.flatMap((p) => p.texts.map((t) => t.text)).join(' ')}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }).sort((a, b) => b.updated - a.updated);
+    const grid = $('#noteGrid');
+    grid.innerHTML = `<button class="nb" type="button" id="nbNew"><div class="nb-new"><div><b>+</b>Nouvelle note</div></div><div class="nb-d">${ui.nref !== 'all' ? 'Pour ' + esc(refInfo({ kind: ui.nref.split(':')[0], id: ui.nref.slice(ui.nref.indexOf(':') + 1) }).label) : 'Rattachée au cours de ton choix'}</div></button>`
+      + list.map((n) => `
+      <button class="nb" type="button" data-open-note="${esc(n.id)}">
+        <div class="nb-cover" data-thumb="${esc(n.id)}"><span class="nb-pages">${n.pages.length} p.</span></div>
+        <div>
+          <div class="nb-t">${esc(n.title || 'Sans titre')}</div>
+          <div class="nb-m">${refHtml(n.ref)}</div>
+          <div class="nb-d">Modifiée le ${esc(fmtLong.format(new Date(n.updated)))}</div>
+        </div>
+      </button>`).join('');
+    for (const el of grid.querySelectorAll('[data-thumb]')) {
+      const n = notes.find((x) => x.id === el.dataset.thumb);
+      let c = thumbCache.get(n.id);
+      if (!c || c.v !== n.updated) { c = { v: n.updated, el: thumbCanvas(n.pages[0], 240) }; thumbCache.set(n.id, c); }
+      el.prepend(c.el);
+    }
+    $('#nbNew').onclick = () => openNewNote(ui.nref !== 'all' ? ui.nref : '');
+  }
+
+  function buildPaperPick() {
+    const box = $('#paperPick'); box.innerHTML = '';
+    for (const [k, label] of Object.entries(PAPERS)) {
+      const l = document.createElement('label');
+      l.innerHTML = `<input type="radio" name="paper" id="paper_${k}" value="${k}" ${k === 'lined' ? 'checked' : ''}>`;
+      l.appendChild(thumbCanvas({ paper: k, strokes: [], texts: [] }, 110));
+      l.insertAdjacentHTML('beforeend', `<span>${label}</span>`);
+      box.appendChild(l);
+    }
+  }
+
+  function openNewNote(refVal) {
+    $('#n_title').value = '';
+    const sel = $('#n_ref'); sel.innerHTML = refOptions(false); sel.value = refVal || '';
+    $('#dlgNote').showModal();
+    $('#n_title').focus();
+  }
+  $('#formNote').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const rv = $('#n_ref').value, i = rv.indexOf(':');
+    const ref = rv ? { kind: rv.slice(0, i), id: rv.slice(i + 1) } : null;
+    const paper = (document.querySelector('input[name=paper]:checked') || {}).value || 'lined';
+    const now = Date.now();
+    const n = { id: uid(), title: $('#n_title').value.trim() || `Note du ${fmtLong.format(today)}`, ref, created: now, updated: now, pages: [newPage(paper)] };
+    notes.push(n);
+    await NotesDB.put(n);
+    $('#dlgNote').close();
+    render();
+    openEditor(n.id);
+  });
+
+  $('#btnAddNote').addEventListener('click', () => openNewNote(ui.nref !== 'all' ? ui.nref : ''));
+  $('#noteFilter').addEventListener('change', (e) => { ui.nref = e.target.value; renderNotes(); });
+  $('#searchNotes').addEventListener('input', (e) => { ui.qn = e.target.value; renderNotes(); });
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-notes-kind],[data-open-note]');
+    if (!t) return;
+    if (t.dataset.openNote) { openEditor(t.dataset.openNote); return; }
+    const { notesKind: kind, notesId: id } = t.dataset;
+    if (!noteCount(kind, id)) { openNewNote(`${kind}:${id}`); return; }
+    ui.nref = `${kind}:${id}`; setTab('notes'); renderNotes();
+    $('#panelNotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ---------- Éditeur ----------
+  const PREF_KEY = 'carnet-formation.editor';
+  const ed = {
+    note: null, tool: 'pen', color: { pen: INK[0], hl: HL[0], text: INK[0] }, size: { pen: 1, hl: 1, eraser: 1, text: 1 },
+    zoom: 1, stylusOnly: false, undo: [], redo: [], views: new Map(), drawing: null, activeText: null, saveTimer: null, dirty: false,
+  };
+  try {
+    const p = JSON.parse(localStorage.getItem(PREF_KEY) || 'null');
+    if (p) {
+      if (SIZES[p.tool]) ed.tool = p.tool;
+      Object.assign(ed.color, p.color); Object.assign(ed.size, p.size);
+      if (ZOOMS.includes(p.zoom)) ed.zoom = p.zoom;
+      ed.stylusOnly = !!p.stylusOnly;
+    }
+  } catch (e) {}
+  function savePrefs() {
+    try { localStorage.setItem(PREF_KEY, JSON.stringify({ tool: ed.tool, color: ed.color, size: ed.size, zoom: ed.zoom, stylusOnly: ed.stylusOnly })); } catch (e) {}
+  }
+
+  const edEl = $('#editor'), scroller = $('#edScroll');
+
+  function renderToolbar() {
+    $$('#toolpill [data-tool]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.tool === ed.tool));
+    edEl.classList.toggle('tool-text', ed.tool === 'text');
+    edEl.classList.toggle('tool-eraser', ed.tool === 'eraser');
+    edEl.classList.toggle('stylus-only', ed.stylusOnly);
+    $('#edStylus').checked = ed.stylusOnly;
+    const palette = ed.tool === 'hl' ? HL : ed.tool === 'eraser' ? [] : INK;
+    const sw = $('#swatches');
+    sw.innerHTML = palette.map((c) => `<button class="swatch" type="button" data-color="${c}" aria-label="Couleur ${c}" aria-pressed="${ed.color[ed.tool] === c}"><i style="background:${c}"></i></button>`).join('');
+    sw.hidden = sw.nextElementSibling.hidden = !palette.length;
+    $('#sizes').innerHTML = SIZES[ed.tool].map((v, i) => `<button class="sizeb" type="button" data-size="${i}" aria-label="Taille ${i + 1}" aria-pressed="${ed.size[ed.tool] === i}"><i style="width:${[5, 8, 12][i]}px;height:${[5, 8, 12][i]}px"></i></button>`).join('');
+  }
+  function setTool(t) {
+    ed.tool = t;
+    const a = document.activeElement;
+    if (t !== 'text' && a && a.classList && a.classList.contains('tbox')) a.blur();
+    ed.views.forEach(clearLive);
+    savePrefs(); renderToolbar();
+  }
+  function applyToActiveText() {
+    const a = ed.activeText;
+    if (!a || ed.tool !== 'text') return;
+    a.t.c = ed.color.text; a.t.size = SIZES.text[ed.size.text];
+    a.el.style.color = a.t.c; a.el.style.setProperty('--fs', a.t.size);
+    scheduleSave();
+  }
+  $('#toolpill').addEventListener('pointerdown', (e) => { if (e.target.closest('button')) e.preventDefault(); });
+  $('#toolpill').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.tool) setTool(b.dataset.tool);
+    else if (b.dataset.color) { ed.color[ed.tool] = b.dataset.color; applyToActiveText(); savePrefs(); renderToolbar(); }
+    else if (b.dataset.size) { ed.size[ed.tool] = +b.dataset.size; applyToActiveText(); savePrefs(); renderToolbar(); }
+  });
+  $('#edStylus').addEventListener('change', (e) => { ed.stylusOnly = e.target.checked; savePrefs(); renderToolbar(); });
+
+  function openEditor(id) {
+    const n = notes.find((x) => x.id === id);
+    if (!n) return;
+    ed.note = n; ed.undo = []; ed.redo = []; ed.dirty = false;
+    $('#edTitle').value = n.title;
+    $('#edRef').innerHTML = refHtml(n.ref);
+    $('#edStatus').textContent = 'Enregistré';
+    armDelete($('#edDelete'), async () => {
+      const nid = ed.note.id;
+      ed.dirty = false;
+      await NotesDB.del(nid);
+      notes = notes.filter((x) => x.id !== nid);
+      closeEditor();
+      toast('Note supprimée');
+    });
+    edEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderToolbar(); buildPages(); updateUndoUI();
+    scroller.scrollTop = 0;
+  }
+  function closeEditor() {
+    const a = document.activeElement;
+    if (a && a.blur) a.blur();
+    flushSave();
+    edEl.hidden = true;
+    document.body.style.overflow = '';
+    io.disconnect();
+    ed.note = null; ed.views.clear(); ed.drawing = null;
+    $('#edPages').innerHTML = '';
+    setTab('notes'); render();
+  }
+  $('#edBack').addEventListener('click', closeEditor);
+  $('#edTitle').addEventListener('input', (e) => { if (ed.note) { ed.note.title = e.target.value; scheduleSave(); } });
+
+  // Pages : seules celles proches de l'écran gardent un canvas alloué
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      const v = en.target._v;
+      if (!v) continue;
+      if (en.isIntersecting) { v.active = true; sizeView(v); }
+      else { v.active = false; v.base.width = v.base.height = v.live.width = v.live.height = 0; }
+    }
+  }, { root: scroller, rootMargin: '1200px 0px' });
+
+  function pageWidth() {
+    const avail = scroller.clientWidth - 32;
+    return Math.round(Math.min(820, Math.max(260, avail)) * ed.zoom);
+  }
+  function buildPages() {
+    io.disconnect();
+    const wrap = $('#edPages');
+    wrap.innerHTML = ''; ed.views.clear();
+    wrap.style.setProperty('--pw', pageWidth() + 'px');
+    ed.note.pages.forEach((pg, i) => wrap.appendChild(buildPage(pg, i)));
+    const add = document.createElement('button');
+    add.className = 'addpage'; add.type = 'button'; add.textContent = '+ Ajouter une page';
+    add.onclick = addPage;
+    wrap.appendChild(add);
+    $('#edZoomV').textContent = Math.round(ed.zoom * 100) + ' %';
+  }
+  function buildPage(pg, i) {
+    const total = ed.note.pages.length;
+    const w = document.createElement('div');
+    w.className = 'pwrap';
+    w.innerHTML = `<div class="phead"><span>Page ${i + 1} / ${total}</span><div class="r">
+        <select aria-label="Papier de la page ${i + 1}">${Object.entries(PAPERS).map(([k, l]) => `<option value="${k}"${pg.paper === k ? ' selected' : ''}>${l}</option>`).join('')}</select>
+        ${total > 1 ? '<button class="btn danger sm" type="button">Supprimer la page</button>' : ''}
+      </div></div>
+      <div class="npage"><canvas class="base"></canvas><canvas class="live"></canvas><div class="tlayer"></div></div>`;
+    const v = { pg, el: w.querySelector('.npage'), base: w.querySelector('.base'), live: w.querySelector('.live'), tl: w.querySelector('.tlayer'), sel: w.querySelector('select'), s: 1, d: 1, active: false };
+    v.el._v = v;
+    ed.views.set(pg.id, v);
+    v.sel.onchange = (e) => { const before = snap(pg); pg.paper = e.target.value; pushUndo(pg, before); if (v.active) paintBase(v); scheduleSave(); };
+    const del = w.querySelector('.btn.danger');
+    if (del) armDelete(del, () => {
+      ed.note.pages.splice(ed.note.pages.indexOf(pg), 1);
+      ed.undo = ed.undo.filter((a) => a.id !== pg.id);
+      ed.redo = ed.redo.filter((a) => a.id !== pg.id);
+      buildPages(); updateUndoUI(); scheduleSave();
+      toast('Page supprimée');
+    }, 'Supprimer la page');
+    attachPointer(v);
+    renderTexts(v);
+    io.observe(v.el);
+    return w;
+  }
+  function sizeView(v) {
+    const cssW = v.el.clientWidth;
+    if (!cssW) return;
+    v.s = cssW / PW;
+    v.d = Math.min(DPR(), Math.sqrt(5e6 / (cssW * cssW * PH / PW)));
+    for (const c of [v.base, v.live]) { c.width = Math.round(cssW * v.d); c.height = Math.round(PH * v.s * v.d); }
+    v.el.style.setProperty('--s', v.s);
+    paintBase(v);
+  }
+  function paintBase(v) {
+    const ctx = v.base.getContext('2d');
+    ctx.setTransform(v.d, 0, 0, v.d, 0, 0);
+    paintPage(ctx, v.pg, v.s, false);
+  }
+  function clearLive(v) {
+    const ctx = v.live.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, v.live.width, v.live.height);
+  }
+  function addPage() {
+    const last = ed.note.pages[ed.note.pages.length - 1];
+    ed.note.pages.push(newPage(last ? last.paper : 'lined'));
+    buildPages(); scheduleSave();
+    const pages = $$('#edPages .pwrap');
+    pages[pages.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function applyZoom() {
+    if (!ed.note) return;
+    const ratio = scroller.scrollTop / Math.max(1, scroller.scrollHeight);
+    $('#edPages').style.setProperty('--pw', pageWidth() + 'px');
+    ed.views.forEach((v) => { if (v.active) sizeView(v); });
+    scroller.scrollTop = ratio * scroller.scrollHeight;
+    $('#edZoomV').textContent = Math.round(ed.zoom * 100) + ' %';
+  }
+  function stepZoom(dir) {
+    const i = Math.max(0, Math.min(ZOOMS.length - 1, ZOOMS.indexOf(ed.zoom) + dir));
+    ed.zoom = ZOOMS[i]; savePrefs(); applyZoom();
+  }
+  $('#edZoomIn').addEventListener('click', () => stepZoom(1));
+  $('#edZoomOut').addEventListener('click', () => stepZoom(-1));
+  let rzTimer;
+  window.addEventListener('resize', () => { if (edEl.hidden) return; clearTimeout(rzTimer); rzTimer = setTimeout(applyZoom, 150); });
+
+  // ---------- Saisie au stylet / souris / doigt ----------
+  const toLogical = (e, v) => {
+    const r = v.live.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * PW, y: (e.clientY - r.top) / r.height * PH };
+  };
+  const pressure = (e) => e.pointerType === 'pen' ? Math.round((e.pressure || 0.5) * 100) / 100 : 0.5;
+  let liveRaf = 0;
+  function scheduleLive() { if (!liveRaf) liveRaf = requestAnimationFrame(() => { liveRaf = 0; drawLive(); }); }
+  function drawLive() {
+    const dr = ed.drawing;
+    if (!dr || !dr.st) return;
+    clearLive(dr.v);
+    const ctx = dr.v.live.getContext('2d');
+    ctx.setTransform(dr.v.d, 0, 0, dr.v.d, 0, 0);
+    drawStroke(ctx, dr.st, dr.v.s);
+  }
+  function drawEraserCursor(v, pt) {
+    clearLive(v);
+    const ctx = v.live.getContext('2d');
+    ctx.setTransform(v.d, 0, 0, v.d, 0, 0);
+    ctx.beginPath(); ctx.arc(pt.x * v.s, pt.y * v.s, SIZES.eraser[ed.size.eraser] / 2 * v.s, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  function distSeg(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+    const t = l2 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2)) : 0;
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+  function eraseAt(v, pt) {
+    const dr = ed.drawing, r = SIZES.eraser[ed.size.eraser] / 2;
+    const from = (dr && dr.last) || pt;
+    if (dr) dr.last = pt;
+    const steps = Math.max(1, Math.ceil(Math.hypot(pt.x - from.x, pt.y - from.y) / (r / 2)));
+    const probes = [];
+    for (let i = 1; i <= steps; i++) probes.push({ x: from.x + (pt.x - from.x) * i / steps, y: from.y + (pt.y - from.y) * i / steps });
+    const hit = (st) => {
+      const p = st.p, rr = r + st.w / 2;
+      for (const q of probes) {
+        if (p.length === 3 && Math.hypot(q.x - p[0], q.y - p[1]) <= rr) return true;
+        for (let i = 3; i < p.length; i += 3) if (distSeg(q.x, q.y, p[i - 3], p[i - 2], p[i], p[i + 1]) <= rr) return true;
+      }
+      return false;
+    };
+    const before = v.pg.strokes.length;
+    v.pg.strokes = v.pg.strokes.filter((st) => !hit(st));
+    let textHit = false;
+    v.pg.texts = v.pg.texts.filter((t) => {
+      const el = v.tl.querySelector(`[data-id="${t.id}"]`);
+      const h = el ? el.offsetHeight / v.s : t.size * 1.4;
+      const inside = probes.some((q) => q.x >= t.x - r && q.x <= t.x + t.w + r && q.y >= t.y - r && q.y <= t.y + h + r);
+      if (inside) textHit = true;
+      return !inside;
+    });
+    if (v.pg.strokes.length !== before || textHit) {
+      if (dr) dr.changed = true;
+      paintBase(v);
+      if (textHit) renderTexts(v);
+    }
+  }
+
+  function attachPointer(v) {
+    const live = v.live;
+    live.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'pen' && !ed.stylusOnly) {
+        ed.stylusOnly = true; savePrefs(); renderToolbar();
+        toast('Stylet détecté : le doigt fait défiler les pages');
+      }
+      if (ed.stylusOnly && e.pointerType === 'touch') return;
+      if (e.button !== 0 || ed.drawing || panPrev) return;
+      e.preventDefault();
+      const pt = toLogical(e, v);
+      const a = document.activeElement;
+      const editingText = a && a.classList && a.classList.contains('tbox');
+      if (ed.tool === 'text') {
+        if (editingText) a.blur(); // premier tap : on quitte le texte en cours
+        else createText(v, pt);
+        return;
+      }
+      if (editingText) a.blur();
+      live.setPointerCapture(e.pointerId);
+      const before = snap(v.pg);
+      if (ed.tool === 'eraser') {
+        ed.drawing = { v, id: e.pointerId, before, erase: true, changed: false, last: null };
+        eraseAt(v, pt); drawEraserCursor(v, pt);
+        return;
+      }
+      const st = { t: ed.tool, c: ed.color[ed.tool], w: SIZES[ed.tool][ed.size[ed.tool]], p: [r1(pt.x), r1(pt.y), pressure(e)] };
+      ed.drawing = { v, id: e.pointerId, before, st };
+      drawLive();
+    });
+    live.addEventListener('pointermove', (e) => {
+      const dr = ed.drawing;
+      if (!dr || dr.v !== v || dr.id !== e.pointerId) {
+        if (!dr && ed.tool === 'eraser' && e.pointerType !== 'touch') drawEraserCursor(v, toLogical(e, v));
+        return;
+      }
+      const list = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+      for (const ce of (list.length ? list : [e])) {
+        const pt = toLogical(ce, v);
+        if (dr.erase) { eraseAt(v, pt); continue; }
+        const p = dr.st.p;
+        if (Math.hypot(pt.x - p[p.length - 3], pt.y - p[p.length - 2]) < 1.2) continue;
+        p.push(r1(pt.x), r1(pt.y), pressure(ce));
+      }
+      if (dr.erase) drawEraserCursor(v, toLogical(e, v));
+      else scheduleLive();
+    });
+    const end = (e) => {
+      const dr = ed.drawing;
+      if (!dr || dr.v !== v || dr.id !== e.pointerId) return;
+      ed.drawing = null;
+      clearLive(v);
+      if (dr.erase) { if (dr.changed) { pushUndo(v.pg, dr.before); scheduleSave(); } return; }
+      v.pg.strokes.push(dr.st);
+      const ctx = v.base.getContext('2d');
+      ctx.setTransform(v.d, 0, 0, v.d, 0, 0);
+      drawStroke(ctx, dr.st, v.s);
+      pushUndo(v.pg, dr.before);
+      scheduleSave();
+    };
+    live.addEventListener('pointerup', end);
+    live.addEventListener('pointercancel', end);
+    live.addEventListener('pointerleave', () => { if (!ed.drawing && ed.tool === 'eraser') clearLive(v); });
+  }
+
+  // Défilement à deux doigts quand on écrit au doigt
+  const touchPts = new Map();
+  let panPrev = null;
+  const touchAvg = () => {
+    let x = 0, y = 0;
+    touchPts.forEach((p) => { x += p.x; y += p.y; });
+    return { x: x / touchPts.size, y: y / touchPts.size };
+  };
+  scroller.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return;
+    touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touchPts.size === 2 && !ed.stylusOnly) {
+      const dr = ed.drawing;
+      if (dr) {
+        ed.drawing = null; clearLive(dr.v);
+        if (dr.erase && dr.changed) { pushUndo(dr.v.pg, dr.before); scheduleSave(); }
+      }
+      panPrev = touchAvg();
+    }
+  }, true);
+  scroller.addEventListener('pointermove', (e) => {
+    if (!touchPts.has(e.pointerId)) return;
+    touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touchPts.size >= 2 && panPrev) {
+      const a = touchAvg();
+      scroller.scrollBy(panPrev.x - a.x, panPrev.y - a.y);
+      panPrev = a;
+    }
+  }, true);
+  const touchEnd = (e) => { touchPts.delete(e.pointerId); if (touchPts.size < 2) panPrev = null; };
+  scroller.addEventListener('pointerup', touchEnd, true);
+  scroller.addEventListener('pointercancel', touchEnd, true);
+
+  // ---------- Zones de texte ----------
+  function renderTexts(v) {
+    v.tl.innerHTML = '';
+    for (const t of v.pg.texts) v.tl.appendChild(textEl(v, t));
+  }
+  function placeCaretEnd(el) {
+    const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  function textEl(v, t, initialBefore) {
+    const el = document.createElement('div');
+    el.className = 'tbox'; el.dataset.id = t.id;
+    el.contentEditable = 'plaintext-only';
+    if (el.contentEditable !== 'plaintext-only') el.contentEditable = 'true';
+    el.style.left = (t.x / PW * 100) + '%';
+    el.style.top = (t.y / PH * 100) + '%';
+    el.style.width = (t.w / PW * 100) + '%';
+    el.style.color = t.c;
+    el.style.setProperty('--fs', t.size);
+    el.textContent = t.text;
+    let before = initialBefore || null;
+    el.addEventListener('focus', () => { if (!before) before = snap(v.pg); ed.activeText = { v, t, el }; });
+    el.addEventListener('input', () => { t.text = el.innerText.replace(/\n$/, ''); scheduleSave(); });
+    el.addEventListener('blur', () => {
+      if (ed.activeText && ed.activeText.el === el) ed.activeText = null;
+      if (!t.text.trim()) { v.pg.texts = v.pg.texts.filter((x) => x !== t); el.remove(); }
+      if (before) { pushUndo(v.pg, before); scheduleSave(); }
+      before = null;
+    });
+    el.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') el.blur(); });
+    // Avec l'outil Texte : glisser une zone non sélectionnée la déplace, un simple tap l'édite
+    el.addEventListener('pointerdown', (e) => {
+      if (ed.tool !== 'text' || document.activeElement === el) return;
+      e.preventDefault();
+      const sx = e.clientX, sy = e.clientY, ox = t.x, oy = t.y, b = snap(v.pg);
+      let moved = false;
+      el.setPointerCapture(e.pointerId);
+      const mv = (ev) => {
+        const dx = (ev.clientX - sx) / v.s, dy = (ev.clientY - sy) / v.s;
+        if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 4) return;
+        moved = true;
+        t.x = r1(Math.max(0, Math.min(PW - 40, ox + dx)));
+        t.y = r1(Math.max(0, Math.min(PH - 30, oy + dy)));
+        el.style.left = (t.x / PW * 100) + '%';
+        el.style.top = (t.y / PH * 100) + '%';
+      };
+      const up = () => {
+        el.removeEventListener('pointermove', mv);
+        el.removeEventListener('pointerup', up);
+        el.removeEventListener('pointercancel', up);
+        if (moved) { pushUndo(v.pg, b); scheduleSave(); }
+        else { el.focus(); placeCaretEnd(el); }
+      };
+      el.addEventListener('pointermove', mv);
+      el.addEventListener('pointerup', up);
+      el.addEventListener('pointercancel', up);
+    });
+    return el;
+  }
+  function createText(v, pt) {
+    const fs = SIZES.text[ed.size.text];
+    const before = snap(v.pg);
+    const t = {
+      id: uid(), text: '', c: ed.color.text, size: fs,
+      x: r1(Math.max(10, pt.x - 4)), y: r1(Math.max(4, pt.y - fs * 0.75)),
+      w: r1(Math.max(180, Math.min(640, PW - pt.x - 30))),
+    };
+    v.pg.texts.push(t);
+    const el = textEl(v, t, before);
+    v.tl.appendChild(el);
+    el.focus();
+  }
+
+  // ---------- Annuler / rétablir ----------
+  const snap = (pg) => JSON.stringify({ paper: pg.paper, strokes: pg.strokes, texts: pg.texts });
+  function pushUndo(pg, before) {
+    const after = snap(pg);
+    if (after === before) return;
+    ed.undo.push({ id: pg.id, before, after });
+    if (ed.undo.length > 200) ed.undo.shift();
+    ed.redo = [];
+    updateUndoUI();
+  }
+  function applySnap(id, data) {
+    const pg = ed.note.pages.find((p) => p.id === id);
+    if (!pg) return;
+    Object.assign(pg, JSON.parse(data));
+    const v = ed.views.get(id);
+    if (v) { if (v.active) paintBase(v); renderTexts(v); v.sel.value = pg.paper; }
+    scheduleSave();
+  }
+  function undo() { const a = ed.undo.pop(); if (!a) return; ed.redo.push(a); applySnap(a.id, a.before); updateUndoUI(); }
+  function redo() { const a = ed.redo.pop(); if (!a) return; ed.undo.push(a); applySnap(a.id, a.after); updateUndoUI(); }
+  function updateUndoUI() { $('#edUndo').disabled = !ed.undo.length; $('#edRedo').disabled = !ed.redo.length; }
+  $('#edUndo').addEventListener('click', undo);
+  $('#edRedo').addEventListener('click', redo);
+
+  // ---------- Sauvegarde ----------
+  function scheduleSave() {
+    if (!ed.note) return;
+    ed.dirty = true;
+    $('#edStatus').textContent = 'Modifications…';
+    clearTimeout(ed.saveTimer);
+    ed.saveTimer = setTimeout(flushSave, 700);
+  }
+  function flushSave() {
+    clearTimeout(ed.saveTimer);
+    if (!ed.note || !ed.dirty) return;
+    ed.dirty = false;
+    ed.note.updated = Date.now();
+    ed.note.sample = false;
+    const n = ed.note;
+    NotesDB.put(n).then(() => { if (ed.note === n && !ed.dirty) $('#edStatus').textContent = 'Enregistré'; });
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flushSave(); });
+  window.addEventListener('pagehide', flushSave);
+
+  // ---------- Export PDF ----------
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  $('#edPdf').addEventListener('click', async () => {
+    const n = ed.note;
+    if (!n) return;
+    const a = document.activeElement;
+    if (a && a.classList && a.classList.contains('tbox')) a.blur();
+    $('#edStatus').textContent = 'Création du PDF…';
+    try {
+      if (!window.jspdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+      n.pages.forEach((pg, i) => {
+        if (i) doc.addPage('a4', 'portrait');
+        const W = 1240, s = W / PW, c = document.createElement('canvas');
+        c.width = W; c.height = Math.round(PH * s);
+        paintPage(c.getContext('2d'), pg, s, true);
+        doc.addImage(c.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
+      });
+      doc.save(`${slug(n.title) || 'note'}.pdf`);
+      toast('PDF téléchargé');
+    } catch (e) {
+      toast('PDF impossible : la première fois, une connexion internet est nécessaire');
+    }
+    $('#edStatus').textContent = ed.dirty ? 'Modifications…' : 'Enregistré';
+  });
+
+  // ---------- Raccourcis ----------
+  document.addEventListener('keydown', (e) => {
+    if (edEl.hidden || document.querySelector('dialog[open]')) return;
+    const typing = e.target.closest && e.target.closest('input, textarea, select, [contenteditable]');
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && !typing && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+    if (mod && !typing && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); return; }
+    if (typing || mod || e.altKey) return;
+    const map = { p: 'pen', h: 'hl', e: 'eraser', t: 'text' };
+    if (map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
+    else if (e.key === 'Escape') closeEditor();
+  });
+
+  // ---------- Note d'exemple ----------
+  function sampleNote(courseId) {
+    const P = (pts) => pts.flatMap(([x, y, p = 0.5]) => [x, y, p]);
+    const line = (x0, y0, x1, y1, steps = 24, jit = 1.2) => {
+      const out = [];
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        out.push([r1(x0 + (x1 - x0) * t + Math.sin(i * 1.7) * jit), r1(y0 + (y1 - y0) * t + Math.cos(i * 2.3) * jit), r1(0.45 + 0.25 * Math.sin(t * Math.PI))]);
+      }
+      return out;
+    };
+    const strokes = [
+      { t: 'hl', c: HL[0], w: 26, p: P(line(126, 140, 452, 139, 12, 0.5)) },
+      { t: 'pen', c: INK[0], w: 3, p: P(line(160, 1010, 160, 640, 30)) },
+      { t: 'pen', c: INK[0], w: 3, p: P(line(160, 1010, 560, 1010, 30)) },
+      { t: 'pen', c: INK[0], w: 3, p: P([[148, 662], [160, 640], [172, 662]]) },
+      { t: 'pen', c: INK[0], w: 3, p: P([[538, 998], [560, 1010], [538, 1022]]) },
+    ];
+    for (const [x, y] of [[200, 960], [235, 948], [262, 925], [300, 910], [330, 896], [365, 872], [395, 866], [430, 836], [470, 822], [505, 792]])
+      strokes.push({ t: 'pen', c: INK[1], w: 6, p: P([[x, y], [x + 1.5, y + 1]]) });
+    strokes.push({ t: 'pen', c: INK[2], w: 3.5, p: P(line(180, 975, 530, 772, 30, 0.8)) });
+    strokes.push({ t: 'pen', c: INK[2], w: 2.5, p: P(line(608, 752, 548, 776, 10, 0.5)) });
+    strokes.push({ t: 'pen', c: INK[2], w: 2.5, p: P([[566, 760], [548, 776], [570, 784]]) });
+    const texts = [
+      { id: uid(), x: 128, y: 115, w: 760, size: 36, c: INK[0], text: 'Régression linéaire' },
+      { id: uid(), x: 128, y: 199, w: 800, size: 27.5, c: INK[1], text: 'Modèle : f(x) = w·x + b\nCoût : J(w, b) = 1/2m · Σ (f(xᵢ) − yᵢ)²\nBut : trouver w et b qui minimisent J.' },
+      { id: uid(), x: 622, y: 690, w: 340, size: 20, c: INK[2], text: 'Descente de gradient\nw ← w − α · ∂J/∂w\nα = taux d\'apprentissage' },
+      { id: uid(), x: 128, y: 1073, w: 800, size: 27.5, c: INK[0], text: 'À revoir : normaliser les features avant la descente de gradient.' },
+    ];
+    const now = Date.now();
+    return {
+      id: uid(), sample: true, title: 'Semaine 1 : régression linéaire', ref: { kind: 'course', id: courseId },
+      created: now - 3 * 864e5, updated: now - 2 * 864e5,
+      pages: [{ id: uid(), paper: 'lined', strokes, texts }, newPage('lined')],
+    };
+  }
+
+  async function initNotes() {
+    buildPaperPick();
+    notes = await NotesDB.all();
+    if (!state.notesSeeded) {
+      state.notesSeeded = true; save();
+      const ml = state.courses.find((c) => c.sample && /Machine Learning/.test(c.title));
+      if (!notes.length && ml) { const n = sampleNote(ml.id); notes.push(n); await NotesDB.put(n); }
+    }
+    render();
+  }
+
+  $('#today').textContent = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(today);
+  if (location.hash === '#conferences') setTab('events');
+  if (location.hash === '#notes') setTab('notes');
+  render();
+  initNotes();
+})();
+</script>
+</body>
+</html>
